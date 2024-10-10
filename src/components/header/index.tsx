@@ -10,7 +10,7 @@ export function Header() {
             <span className="text-blue-500">DEV</span> MANAGEMENT
           </h1>
         </Link>
-        <div className="flex items-baseline">
+        <div className="flex gap-4 items-baseline">
           <Link href={"/dashboard"}>
             <FiUser size={26} color="#4b5563" />
           </Link>
