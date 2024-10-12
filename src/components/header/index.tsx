@@ -42,7 +42,7 @@ export function Header() {
             </Link>
 
             <button onClick={handelLogout}>
-              <FiLogOut size={26} color="#4b5563" />
+              <FiLogOut size={26} color="red" />
             </button>
           </div>
         )}
