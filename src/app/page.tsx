@@ -1,6 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
-import { FiLogOut, FiUser } from "react-icons/fi";
 import heroImg from "@/assets/hero.svg";
 
 export default function Home() {
