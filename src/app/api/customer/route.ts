@@ -11,6 +11,14 @@ export async function POST(request: Request) {
   }
 
   const { name, email, phone, address, userId } = await request.json();
+  const existingUser = await prismaClient.user.findUnique({ where: { email } });
+
+  if (existingUser) {
+    return NextResponse.json(
+      { error: "Este e-mail já existe!" },
+      { status: 400 }
+    );
+  }
 
   try {
     await prismaClient.customer.create({
