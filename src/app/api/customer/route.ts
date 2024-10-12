@@ -19,7 +19,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(
       { message: "Cliente cadastro com sucesso!" },
-      { status: 400 }
+      { status: 201 }
     );
   } catch (error) {
     return NextResponse.json(
