@@ -13,7 +13,18 @@ export async function DELETE(request: Request) {
   const userId = searchParams.get("id");
 
   if (!userId) {
-    return NextResponse.json({ error: "Client not found"}, { status: 404 });
+    return NextResponse.json({ error: "Client not found" }, { status: 404 });
+  }
+
+  const findTickets = await prismaClient.ticket.findFirst({
+    where: { customerId: userId },
+  });
+
+  if (findTickets) {
+    return NextResponse.json(
+      { error: "This client already has an open ticket!" },
+      { status: 401 }
+    );
   }
 
   try {
