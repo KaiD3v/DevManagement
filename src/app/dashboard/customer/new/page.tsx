@@ -1,9 +1,34 @@
+import Link from "next/link";
 import { Container } from "../../../../components/container";
+import { BiArrowBack } from "react-icons/bi";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../../../lib/auth";
+import { redirect } from "next/navigation";
+import { NewCustomerForm } from "../components/form";
 
-export default function NewCustomer() {
+export default async function NewCustomer() {
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user) {
+    redirect("/");
+  }
+
   return (
     <Container>
-      <h1>Página cadastro clientes</h1>
+      <main className="flex flex-col mt-9 mb-2">
+        <div className="flex items-center gap-3">
+          <Link
+            href={"/dashboard/customer"}
+            className="bg-gray-900 px-4 py-1 text-white rounded"
+          >
+            <BiArrowBack size={24} />
+          </Link>
+          <h1 className="text-3xl font-bold">Novo Cliente</h1>
+        </div>
+
+        <NewCustomerForm />
+        
+      </main>
     </Container>
   );
 }
