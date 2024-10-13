@@ -5,12 +5,21 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { TicketItem } from "./components/ticket";
 
+import prismaClient from "@/lib/prisma";
+
 export default async function Dashboard() {
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user) {
     redirect("/");
   }
+
+  const tickets = await prismaClient.ticket.findMany({
+    where: { userId: session?.user.id, status: "ABERTO" },
+    include: { customer: true },
+  });
+
+  console.log(tickets);
 
   return (
     <div>
@@ -30,16 +39,23 @@ export default async function Dashboard() {
             <thead>
               <tr>
                 <th className="font-medium text-left pl-1">CLIENTE</th>
-                <th className="font-medium text-left hidden sm:block">DATA CADASTRO</th>
+                <th className="font-medium text-left hidden sm:block">
+                  DATA CADASTRO
+                </th>
                 <th className="font-medium text-left">STATUS</th>
                 <th className="font-medium text-left">#</th>
               </tr>
             </thead>
             <tbody>
-              <TicketItem />
+              {tickets.map((ticket) => (
+                <TicketItem
+                  customer={ticket.customer}
+                  ticket={ticket}
+                  key={ticket.id}
+                />
+              ))}
             </tbody>
           </table>
-          
         </main>
       </Container>
     </div>
