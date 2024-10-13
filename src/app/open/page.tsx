@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { FiSearch, FiX } from "react-icons/fi";
 import { useState } from "react";
 import { FormTicket } from "./components/FormTicket";
+import { api } from "../../lib/api";
 
 const schema = z.object({
   email: z
@@ -27,6 +28,7 @@ export default function OpenTicket() {
     register,
     handleSubmit,
     setValue,
+    setError,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -35,6 +37,28 @@ export default function OpenTicket() {
   function handleClearCustomer() {
     setCustomer(null);
     setValue("email", "");
+  }
+
+  async function handleSearchCustomer(data: FormData) {
+    const response = await api.get("/api/customer", {
+      params: {
+        email: data.email,
+      },
+    });
+
+    if (response.data === null) {
+      setError("email", {
+        type: "custom",
+        message: "Ops, cliente não encontrado...",
+      });
+
+      return;
+    }
+
+    setCustomer({
+      id: response.data.id,
+      name: response.data.name,
+    });
   }
 
   return (
@@ -53,7 +77,10 @@ export default function OpenTicket() {
             </button>
           </div>
         ) : (
-          <form className="bg-slate-200 py-6 px-2 rounded border-2">
+          <form
+            onSubmit={handleSubmit(handleSearchCustomer)}
+            className="bg-slate-200 py-6 px-2 rounded border-2"
+          >
             <div className="flex flex-col gap-3">
               <Input
                 name="email"
@@ -63,7 +90,10 @@ export default function OpenTicket() {
                 error={errors.email?.message}
               />
 
-              <button className="bg-blue-500 flex flex-row gap-3 px-2 h-11 items-center justify-center rounded text-white">
+              <button
+                type="submit"
+                className="bg-blue-500 flex flex-row gap-3 px-2 h-11 items-center justify-center rounded text-white"
+              >
                 Procurar Cliente
                 <FiSearch size={24} color="#FFF" />
               </button>

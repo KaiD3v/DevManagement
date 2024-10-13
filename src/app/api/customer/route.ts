@@ -3,6 +3,33 @@ import { NextResponse } from "next/server";
 import { authOptions } from "../../../lib/auth";
 import prismaClient from "../../../lib/prisma";
 
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const customerEmail = searchParams.get("email");
+
+  if (!customerEmail || customerEmail === "") {
+    return NextResponse.json(
+      { error: "You need to specify an user!" },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const customer = await prismaClient.customer.findFirst({
+      where: {
+        email: customerEmail as string,
+      },
+    });
+
+    return NextResponse.json(customer);
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Error while search user" },
+      { status: 400 }
+    );
+  }
+}
+
 export async function DELETE(request: Request) {
   const session = await getServerSession(authOptions);
   if (!session || !session.user) {
