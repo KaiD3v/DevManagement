@@ -18,6 +18,30 @@ export default async function NewTicket() {
     where: { userId: session.user.id },
   });
 
+  async function handleRegisterTicket(formData: FormData) {
+    "use server";
+
+    const name = formData.get("name");
+    const description = formData.get("description");
+    const customerId = formData.get("customer");
+
+    if (!name || !description || !customerId) {
+      return;
+    }
+
+    await prismaClient.ticket.create({
+      data: {
+        name: name as string,
+        description: description as string,
+        customerId: customerId as string,
+        status: "ABERTO",
+        userId: session?.user.id as string,
+      },
+    });
+
+    redirect("/dashboard");
+  }
+
   return (
     <Container>
       <main className="mt-9 mb-2">
@@ -30,10 +54,11 @@ export default async function NewTicket() {
           </Link>
           <h1 className="text-3xl font-bold">Novos Chamados</h1>
         </div>
-        <form className="flex flex-col mt-6">
+        <form className="flex flex-col mt-6" action={handleRegisterTicket}>
           <label className="mb-1 font-medium text-lg">Nome do Chamado</label>
           <input
             type="text"
+            name="name"
             placeholder="Digite o nome do Chamado"
             className="w-full border-2 rounded-md px-2 mb-2 h-11"
             required
@@ -43,6 +68,7 @@ export default async function NewTicket() {
             Descreva o problema:
           </label>
           <textarea
+            name="description"
             placeholder="Descreva o problema..."
             className="w-full border-2 rounded-md px-2 mb-2 h-24 resize-none"
             required
@@ -52,7 +78,10 @@ export default async function NewTicket() {
               <label className="mb-1 font-medium text-lg">
                 Selecione o Cliente
               </label>
-              <select className="w-full border-2 rounded-md px-2 mb-2 h-11 resize-none">
+              <select
+                name="customer"
+                className="w-full border-2 rounded-md px-2 mb-2 h-11 resize-none"
+              >
                 {customers.map((customer) => (
                   <option key={customer.id} value={customer.id}>
                     {customer.name}
