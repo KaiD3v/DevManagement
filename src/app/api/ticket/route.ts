@@ -40,3 +40,32 @@ export async function PATCH(request: Request) {
     );
   }
 }
+
+export async function POST(request: Request) {
+  const { customerId, name, description } = await request.json();
+
+  if (!customerId || !name || !description) {
+    return NextResponse.json({ error: "Bad Request." }, { status: 401 });
+  }
+
+  try {
+    await prismaClient.ticket.create({
+      data: {
+        name: name,
+        description: description,
+        customerId: customerId,
+        status: "ABERTO",
+      },
+    });
+
+    return NextResponse.json(
+      { message: "Ticket registrado com sucesso." },
+      { status: 201 }
+    );
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to create ticket." },
+      { status: 400 }
+    );
+  }
+}
